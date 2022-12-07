@@ -1,0 +1,43 @@
+.carousel-inner{
+    height: 700px;
+}
+.carousel-inner .carousel-item img {
+    height: 700px;
+    object-fit: cover;
+}
+.carousel-caption {
+    color: #e50914;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.carousel-caption p {
+    color: #ffffff;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+.rowposter{
+    display: flex;
+    overflow-y: hidden;
+    overflow-x: scroll;
+}
+.rowimg {
+    max-height: 200px;
+    object-fit: contain;
+    width: 100%;
+    box-sizing: content-box;
+    transition: transform 450ms;
+    margin-right: 7px;
+    margin-bottom: 15px;
+}
+.rowimg:hover{
+    transform: scale(1.8);
+    cursor: pointer;
+}
+.largeposter{
+    max-height: 300px;
+}
+
+.rowposter::-webkit-scrollbar{
+    display: none;
+}
