@@ -21,7 +21,7 @@ export class MovieApiServiceService {
 
   constructor(private http:HttpClient) { }
 
-  baseurl = "https://api.themoviedb.org/3/";
+  baseurl = "https://api.themoviedb.org/3";
   
   apikey =  "abf6987751340a495cec69b226825911";
 
@@ -60,6 +60,38 @@ export class MovieApiServiceService {
   {
     return this.http.get(`${this.baseurl}/movie/${data}/credits?api_key=${this.apikey}`);
   }
+
+//Action
+  fetchActionMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=28`);
+  }
+
+  //aventure
+  fetchAventureMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=12`);
+  }
+  //comedy
+  fetchComedyeMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=35`);
+  }
+  //Documentaire
+  fetchDocumentaryMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=99`);
+  }
+  //Animation
+  fetchAnimationMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=16`);
+  }
+  //science-fiction
+  fetchScienceFictionMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=878`);
+  }
+
+  //Thriller
+  fetchThrillerMovies():Observable<any>{
+    return this.http.get(`${this.baseurl}/discover/movie?api_key=${this.apikey}&with_genres=53`);
+  }
+
 
 
 }

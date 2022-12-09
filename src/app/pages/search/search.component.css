@@ -9,7 +9,12 @@ button:hover {
 
 img {
     width: 100%;
+    cursor: pointer;
 }
 h1{
     color: #ffffff;
+}
+
+h5 {
+    cursor: pointer;
 }

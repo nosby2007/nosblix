@@ -16,11 +16,10 @@
     <div class="col-lg-4" *ngFor="let s of searchResult">
         <div class="row">
             <div class="col-lg-3 mt-3 mb-3" *ngIf="s.poster_path">
-                <img src="https://image.tmdb.org/t/p/original/{{ s.poster_path }}" class="rowimg largeposter" alt="...">
+                <img src="https://image.tmdb.org/t/p/original/{{ s.poster_path }}"  [routerLink]="['/movie', s.id]" >
             </div>
             <div class="col-lg-9 mt-4 mb-4">
-                <h5>{{ s.original_title }}</h5>
-                <p>{{ s.overview }}</p>
+                <h5 class="text-white" [routerLink]="['/movie', s.id]">{{ s.original_title }}</h5>
             </div>
         </div>
 

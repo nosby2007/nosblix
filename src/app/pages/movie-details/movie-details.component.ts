@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
+import { Observable } from 'rxjs';
 import { MovieApiServiceService } from 'src/app/service/movie-api-service.service';
 
 @Component({
@@ -31,17 +32,18 @@ export class MoviedetailsComponent implements OnInit{
       
     });
   }
-  getVideo(id:any){
+
+
+  getVideo(id:any)
+  {
     this.service.getMovieVideo(id).subscribe((result)=>{
-      console.log(result, 'getmovievideo#');
+      console.log(result, 'getMovieVideo#');
       result.results.forEach((element:any) => {
           if(element.type=="Trailer")
           {
             this.getMovieVideoResult = element.key;
           }
       });
-
-      this.getMovieVideoResult = result;
       
     });
   }
@@ -50,9 +52,10 @@ export class MoviedetailsComponent implements OnInit{
   {
     this.service.getMovieCast(id).subscribe((result)=>{
       console.log(result, 'movieCast#');
-      this.getMovieCast = result.cast;
+      this.getMovieCastResult = result.cast;
       
     });
   }
+
       
-  }
+}
