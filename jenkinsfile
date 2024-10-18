@@ -1,6 +1,6 @@
 node{
     stage('Checkout SCM'){
-        git branch: 'Origin', url:'https://github.com/nosby2007/JADE-SHOP.git'
+        git branch: 'Origin', url:'https://github.com/nosby2007/nosblix.git'
         
     }
     stage('install node modules'){
