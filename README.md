@@ -1,27 +1,24 @@
-# Netflix
+# Innovacare Academy — Foundation Preview
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.0.1.
+A clinical learning catalog prototype migrated from the NOSBLIX Angular 15 movie-discovery frontend.
 
-## Development server
+## Run
+- Install a Node.js version compatible with Angular 15.
+- Run `npm ci`
+- Run `npm start` and visit http://localhost:4200
+- Run `npm run build` for a production build.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Implemented
+- Responsive academy catalog and navigation
+- Local typed course/lesson dataset (3 illustrative courses)
+- Search by course title, category and description
+- Course detail and selectable text lessons
+- Removal of TMDB dependencies and the previously exposed API key from application source
 
-## Code scaffolding
+## Not yet implemented
+Authentication, real content import from Innovacare Training, instructor administration, videos, assessments, progress persistence, payment processing, enrollment, certificates, support workflows, CI/CD deployment, accreditation.
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+**Important:** This is an educational UI preview, not a clinical guideline or accredited CE/CNE course. Review all medical content before publishing.
 
-## Build
-
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+## Next integration
+Audit the existing Innovacare Training course JSON/quiz schemas and implement an adapter before adding Firebase persistence. Do not duplicate the existing learning engine. Keep payment entitlements and certificate issuance server-side.

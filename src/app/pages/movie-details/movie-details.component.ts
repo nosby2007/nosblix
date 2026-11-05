@@ -1,61 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
-import { Observable } from 'rxjs';
-import { MovieApiServiceService } from 'src/app/service/movie-api-service.service';
-
-@Component({
-  selector: 'app-movie-details',
-  templateUrl: './movie-details.component.html',
-  styleUrls: ['./movie-details.component.css']
-})
-export class MoviedetailsComponent implements OnInit{
-
-  constructor(private service:MovieApiServiceService, private router:ActivatedRoute){}
-  getMovieDetailResult:any;
-  getMovieVideoResult:any;
-  getMovieCastResult:any;
-
-
-  ngOnInit(): void {
-    let getParamId = this.router.snapshot.paramMap.get('id');
-    console.log(getParamId,'getparamid#');
-    
-    this.getMovie(getParamId);
-    this.getVideo(getParamId);
-    this.getMovieCast(getParamId);
-  }
-
-  getMovie(id:any){
-    this.service.MovieDetails(id).subscribe((result)=>{
-      console.log(result, 'moviedetails#');
-      this.getMovieDetailResult = result;
-      
-    });
-  }
-
-
-  getVideo(id:any)
-  {
-    this.service.getMovieVideo(id).subscribe((result)=>{
-      console.log(result, 'getMovieVideo#');
-      result.results.forEach((element:any) => {
-          if(element.type=="Trailer")
-          {
-            this.getMovieVideoResult = element.key;
-          }
-      });
-      
-    });
-  }
-
-  getMovieCast(id:any)
-  {
-    this.service.getMovieCast(id).subscribe((result)=>{
-      console.log(result, 'movieCast#');
-      this.getMovieCastResult = result.cast;
-      
-    });
-  }
-
-      
+import { Course, CourseService } from '../../service/course.service';
+@Component({ selector: 'app-movie-details', templateUrl: './movie-details.component.html', styleUrls: ['./movie-details.component.css'] })
+export class MoviedetailsComponent implements OnInit {
+  course?: Course;
+  activeLessonId = '';
+  constructor(private route: ActivatedRoute, private courses: CourseService) {}
+  ngOnInit(): void { this.route.paramMap.subscribe(params => { this.course = this.courses.find(params.get('id')); this.activeLessonId = this.course?.lessons[0]?.id || ''; }); }
+  get activeLesson() { return this.course?.lessons.find(lesson => lesson.id === this.activeLessonId); }
+  selectLesson(id: string): void { this.activeLessonId = id; }
 }
