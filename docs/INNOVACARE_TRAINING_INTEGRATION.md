@@ -1,33 +1,39 @@
-# Innovacare Academy — Canonical Training integration
+# Innovacare Academy integration contract
 
-Source of truth: `support975/innovacare-trainning`, nested application at `innovacare-trainning-main`.
+Audited against `support975/innovacare-trainning` `main` at `64a0ff0836f52acf9734db873d0a90c4f193dacf`.
 
-## Audit
-- Angular 20 + AngularFire 20, Firebase project `innovacare-training`.
-- Canonical collections: `courses`, `users`, `organizationCourseAssignments`.
-- Existing learner flows: course catalog, course detail, course player, exams, grading, progress, certificates.
-- Course schema: `sections[].lessons[].blocks[]` with text, video, image, quiz, file, embed.
-- `CoursesRepo.visibleForProfile` enforces organization-specific visibility in application logic; **do not assume this is sufficient as Firestore security**.
-- Exam runner grades through existing platform; never duplicate answers/answer keys or score calculation in Academy.
+## Responsibility boundary
 
-## Academy implementation
-- Uses the same Firebase project for sign-in and read-only `courses` collection.
-- Displays only `active=true AND isPublic=true` courses for authenticated users.
-- No direct writes to course, exam, enrollment, progress or certificate collections.
-- Opens canonical Training learner course route for actual delivery.
-- Existing Training account is required. Auth sessions across different web origins may require a second sign-in; true SSO requires a reviewed session handoff.
-- The Training app's production URL and learner route need confirmation before launch.
+Academy is a discovery, profile, progress-summary and secure-handoff frontend. Innovacare Training remains authoritative for course authoring, course blocks, enrollment writes, lesson completion, quiz sessions, exam questions/submissions, scoring, certificates and organization administration. Academy never reads answer-key documents and contains no scoring engine.
 
-## Security and release blockers
-1. **Do not deploy until Firestore rules are audited.** A client query is not an authorization boundary; rules must enforce visibility, org assignments, and sensitive exam content.
-2. Add the Academy hosting domain to Firebase Auth authorized domains.
-3. Verify public catalog read permissions against production rules using emulator tests.
-4. Do not expose answer keys, paid course blocks, protected video URLs, or private course content through public reads.
-5. The current Firebase config is copied from the existing Training client config. Prefer dev/staging Firebase projects for tests.
-6. **Dependency lockfile needs regeneration**: run `npm install --package-lock-only` with network access, commit the resulting lockfile, then `npm ci && npm run build`.
-7. Add logout UI, route guards, loading/error states, email verification and automated tests.
-8. Check the canonical course URL; currently assumed `/learner/courses/:courseId`.
-9. The original Angular 15 frontend requires migration before long-term production use.
+## Firebase contracts
 
-## Integration contract
-Academy is a discovery shell, not a fork of Training's learning engine. Course creation, enrollment, quizzes, exams, scoring, certificates and progress remain canonical in Training. Do not migrate or duplicate Firestore collections.
+- Project: `innovacare-training` (the Training client configuration is used; Firebase web config is public but must have API/domain restrictions).
+- Profile: `users/{uid}` with `role`, `active`, `orgId`, `accountType` and display fields.
+- Self-registration: email/password Auth plus a new `users/{uid}` document with `role=learner`, `active=true`, `orgId=null`, `accountType=individual`, and `onboardingSource=academy-self-serve`. Registration never accepts role or organization input.
+- Courses: `courses/{courseId}`. Public query requires `active == true` and `isPublic == true`. Organization visibility is the union of `assignedOrgIds array-contains orgId`, legacy `orgId == profile.orgId`, and active `organizationCourseAssignments` mappings. Inactive courses are removed after merge.
+- Email restrictions: public courses with `allowedEmailDomains` are filtered for the signed-in profile email. Firestore rules remain the authorization boundary.
+- Learning activity: read-only `users/{uid}/enrollments/{courseId}` for the signed-in learner.
+- Organization summary: managers/admins query same-org learner profiles and enrollment collection-group records. Missing indexes or rules return an unavailable state; Academy does not relax rules.
+- Certificates: Academy derives completion visibility from the learner enrollment and hands off to `/learner/certifications`. Canonical `certificates` records remain in Training.
+
+## Canonical routes
+
+- Course overview: `/learner/courses/:id`
+- Course player: `/learner/courses/:id/view`
+- Course exam: `/learner/courses/:id/exam/:examId` (launched by Training only)
+- Learner certifications: `/learner/certifications`
+- Learner dashboard: `/learner`
+- Organization administration: `/manager`
+- Super administration: `/super-admin`
+
+The production base URL currently configured by Training is `https://innovacare-training.web.app`.
+
+## Security findings and release gates
+
+1. Current Training rules protect `courses/*/exams/*/answerKey/*` as super-admin only and self-scope learner enrollment/progress reads.
+2. Angular guards improve navigation but do not authorize data; all data access depends on Training Firestore rules.
+3. Different Firebase Hosting origins do not share browser Auth persistence. Academy uses an explicit handoff and tells the learner that Training may request another sign-in. No token is placed in a URL.
+4. Firebase Console access is required to confirm the Academy localhost and future Hosting domains in Authentication > Settings > Authorized domains. This cannot be proven from repository files.
+5. The repository exposes aliases for dev/staging Firebase projects, but their web client configurations are not committed. Local integration therefore targets the current Training Firebase client project and must not use production learner credentials or mutate production course data.
+6. Before deployment, run Training rule emulator coverage against the exact deployed ruleset and configure a non-production Firebase environment for end-to-end auth/data tests.

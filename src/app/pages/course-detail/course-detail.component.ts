@@ -1,0 +1,19 @@
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { Subscription } from 'rxjs';
+import { AcademyCourse } from '../../models/academy.models';
+import { AcademyCatalogService } from '../../service/academy-catalog.service';
+import { AcademyAuthService } from '../../service/academy-auth.service';
+
+@Component({ standalone: false, selector: 'app-course-detail', template: `
+<div class="page" *ngIf="course as c; else unavailable"><a routerLink="/catalogue" class="back-link">← Back to catalogue</a><section class="detail-hero"><div><div class="tag-row"><span class="pill">{{c.category}}</span><span class="pill subtle">{{c.level}}</span><span class="pill subtle">{{c.language}}</span></div><h1>{{c.title}}</h1><p>{{c.subtitle || c.description}}</p><div class="course-facts"><span><b>{{c.durationMin}}</b> minutes</span><span><b>{{lessonCount}}</b> lessons</span><span *ngIf="c.ceCredit"><b>{{c.ceCredit}}</b> CE credit</span><span><b>{{c.certification ? 'Yes' : 'No'}}</b> certificate track</span></div><a class="button primary" [routerLink]="user ? ['/learn',c.id] : ['/auth']">{{user ? 'Start or continue' : 'Sign in to learn'}} →</a></div><div class="detail-art" [style.backgroundImage]="c.imageUrl ? 'linear-gradient(145deg,rgba(7,19,30,.25),#07131e),url('+c.imageUrl+')' : ''"><span>INNOVACARE</span><strong>+</strong><small>ACADEMY PROGRAM</small></div></section>
+<div class="detail-layout"><section><div class="content-block"><span class="eyebrow">ABOUT THIS COURSE</span><h2>What you will learn</h2><p>{{c.description}}</p><div class="chip-list"><span *ngFor="let tag of c.tags">{{tag}}</span></div></div><div class="content-block"><span class="eyebrow">CURRICULUM</span><h2>Course outline</h2><div class="curriculum"><details *ngFor="let section of c.sections; let i=index" [open]="i===0"><summary><span>{{i+1 | number:'2.0'}}. {{section.title}}</span><small>{{section.lessons.length}} lessons</small></summary><div class="lesson-row" *ngFor="let lesson of section.lessons"><span>▷</span><div><b>{{lesson.title}}</b><small>{{lesson.blockTypes.join(' · ') || 'Learning activity'}}</small></div><em>{{lesson.minutes ? lesson.minutes+' min' : 'Self-paced'}}</em></div></details><p class="muted" *ngIf="!c.sections.length">The detailed curriculum is available in the secure Training player.</p></div></div></section>
+<aside><div class="panel instructor-card"><span class="eyebrow">INSTRUCTOR</span><div class="instructor-avatar">{{c.lecturer.charAt(0)}}</div><h3>{{c.lecturer}}</h3><p>Course faculty information is supplied by Innovacare Training.</p></div><div class="panel safety-card"><b>Secure learning handoff</b><p>Lessons, quizzes, answer evaluation, exams, progress and certificates stay in the canonical Training application.</p></div></aside></div></div>
+<ng-template #unavailable><div class="page"><div class="empty-state"><h1>Course unavailable</h1><p>This course is not visible to your account, is inactive, or is still loading.</p><a class="button primary" routerLink="/catalogue">Return to catalogue</a></div></div></ng-template>` })
+export class CourseDetailComponent implements OnInit, OnDestroy {
+  course?: AcademyCourse; user = this.auth.user$.value; private readonly subscriptions = new Subscription();
+  constructor(private readonly route: ActivatedRoute, private readonly catalog: AcademyCatalogService, private readonly auth: AcademyAuthService) {}
+  ngOnInit(): void { const id = this.route.snapshot.paramMap.get('id') || ''; this.subscriptions.add(this.catalog.courses$.subscribe(courses => this.course = courses.find(course => course.id === id))); this.subscriptions.add(this.auth.user$.subscribe(user => this.user = user)); }
+  get lessonCount(): number { return this.course?.sections.reduce((sum, section) => sum + section.lessons.length, 0) || 0; }
+  ngOnDestroy(): void { this.subscriptions.unsubscribe(); }
+}

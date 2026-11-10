@@ -1,24 +1,17 @@
-import { Component, HostListener } from '@angular/core';
+import { Component } from '@angular/core';
+import { Router } from '@angular/router';
+import { AcademyAuthService } from './service/academy-auth.service';
 
-@Component({
-  selector: 'app-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
-})
+@Component({ standalone: false, selector: 'app-root', templateUrl: './app.component.html', styleUrls: ['./app.component.css'] })
 export class AppComponent {
-  title = 'netflix';
-  navbg: any;
-
-@HostListener('document:scroll') scrollover(){
-  console.log(document.body.scrollTop, 'scrolllength#');
-  
-  if(document.body.scrollTop > 0 || document.documentElement.scrollTop > 0) {
-    this.navbg ={
-      'background-color':'#000000'
-    }
-  }else 
-  {
-
+  readonly title = 'Innovacare Academy';
+  readonly user$ = this.auth.user$;
+  readonly profile$ = this.auth.profile$;
+  menuOpen = false;
+  constructor(public readonly auth: AcademyAuthService, private readonly router: Router) {}
+  async logout(): Promise<void> {
+    await this.auth.logout();
+    this.menuOpen = false;
+    await this.router.navigate(['/']);
   }
-}
 }

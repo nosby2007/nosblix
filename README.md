@@ -1,24 +1,18 @@
-# Innovacare Academy — Foundation Preview
+# Innovacare Academy
 
-A clinical learning catalog prototype migrated from the NOSBLIX Angular 15 movie-discovery frontend.
+Responsive Angular 20 frontend integrated with the canonical Innovacare Training Firebase project.
 
-## Run
-- Install a Node.js version compatible with Angular 15.
-- Run `npm ci`
-- Run `npm start` and visit http://localhost:4200
-- Run `npm run build` for a production build.
+## Local development
 
-## Implemented
-- Responsive academy catalog and navigation
-- Local typed course/lesson dataset (3 illustrative courses)
-- Search by course title, category and description
-- Course detail and selectable text lessons
-- Removal of TMDB dependencies and the previously exposed API key from application source
+```powershell
+npm install
+npm run build
+npm test
+npm start -- --host 127.0.0.1 --port 4200
+```
 
-## Not yet implemented
-Authentication, real content import from Innovacare Training, instructor administration, videos, assessments, progress persistence, payment processing, enrollment, certificates, support workflows, CI/CD deployment, accreditation.
+Open http://localhost:4200.
 
-**Important:** This is an educational UI preview, not a clinical guideline or accredited CE/CNE course. Review all medical content before publishing.
+Academy provides public discovery, account access, learner dashboards, catalogue/detail views, progress summaries, organization overview, profile settings and explicit handoffs to Innovacare Training. It does not duplicate quizzes, exams, scoring, answer keys, progress writes or certificates.
 
-## Next integration
-Audit the existing Innovacare Training course JSON/quiz schemas and implement an adapter before adding Firebase persistence. Do not duplicate the existing learning engine. Keep payment entitlements and certificate issuance server-side.
+See [the integration contract](docs/INNOVACARE_TRAINING_INTEGRATION.md) for collection schemas, routes, authorization boundaries and release blockers.

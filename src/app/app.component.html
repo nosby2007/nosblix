@@ -1,1 +1,16 @@
-<nav class="academy-nav"><a routerLink="/" class="brand"><span class="brand-mark">✚</span> INNOVACARE <span>ACADEMY</span></a><div class="nav-links"><a routerLink="/">Home</a><a routerLink="/search">Courses</a></div><a class="nav-label" routerLink="/login">Sign in</a></nav><router-outlet></router-outlet><footer class="academy-footer"><strong>INNOVACARE ACADEMY</strong><span>Powered by Innovacare Training</span></footer>
+<a class="skip-link" href="#main-content">Skip to content</a>
+<header class="academy-nav">
+  <a routerLink="/" class="brand" aria-label="Innovacare Academy home"><span class="brand-mark">+</span><span>INNOVACARE <b>ACADEMY</b></span></a>
+  <button class="menu-button" type="button" (click)="menuOpen=!menuOpen" [attr.aria-expanded]="menuOpen" aria-label="Toggle navigation">☰</button>
+  <nav class="nav-links" [class.open]="menuOpen" aria-label="Primary navigation">
+    <a routerLink="/catalogue" routerLinkActive="active">Catalogue</a><a routerLink="/about" routerLinkActive="active">About</a><a routerLink="/support" routerLinkActive="active">Support</a>
+    <ng-container *ngIf="user$|async"><a routerLink="/dashboard" routerLinkActive="active">Dashboard</a><a routerLink="/learning" routerLinkActive="active">My Learning</a><a routerLink="/organization" routerLinkActive="active" *ngIf="(profile$|async)?.orgId && ['admin','manager','super_admin'].includes((profile$|async)?.role || '')">Organization</a></ng-container>
+  </nav>
+  <div class="nav-actions">
+    <a class="button ghost compact" routerLink="/auth" *ngIf="!(user$|async)">Sign in</a>
+    <a class="avatar-link" routerLink="/profile" *ngIf="user$|async as user" [attr.aria-label]="'Account for '+(user.displayName || user.email)">{{(user.displayName || user.email || 'A').charAt(0).toUpperCase()}}</a>
+    <button class="text-button" type="button" (click)="logout()" *ngIf="user$|async">Log out</button>
+  </div>
+</header>
+<main id="main-content"><router-outlet></router-outlet></main>
+<footer class="academy-footer"><div><strong>INNOVACARE ACADEMY</strong><p>Medical education powered by the canonical Innovacare Training platform.</p></div><div class="footer-links"><a routerLink="/catalogue">Courses</a><a routerLink="/about">About</a><a routerLink="/support">Support</a></div><span>© 2026 Innovacare</span></footer>
