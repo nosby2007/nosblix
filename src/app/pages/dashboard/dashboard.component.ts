@@ -1,0 +1,19 @@
+import { Component } from '@angular/core';
+import { AcademyAuthService } from '../../service/academy-auth.service';
+import { AcademyCatalogService } from '../../service/academy-catalog.service';
+import { AcademyLearningService } from '../../service/academy-learning.service';
+
+@Component({ standalone: false, selector: 'app-dashboard', template: `
+<div class="page"><section class="dashboard-hero"><div><span class="eyebrow">LEARNER DASHBOARD</span><h1>Welcome back, {{(profile$|async)?.displayName || (user$|async)?.displayName || 'Learner'}}.</h1><p>Continue where you left off and keep your learning goals in view.</p></div><a class="button ghost" routerLink="/catalogue">Browse courses</a></section>
+<div class="stat-grid"><div class="stat-card"><span>Assigned</span><strong>{{(enrollments$|async)?.length || 0}}</strong><small>learning programs</small></div><div class="stat-card"><span>In progress</span><strong>{{inProgress}}</strong><small>active now</small></div><div class="stat-card"><span>Completed</span><strong>{{completed}}</strong><small>programs finished</small></div><div class="stat-card"><span>Average progress</span><strong>{{average}}%</strong><small>across enrollments</small></div></div>
+<section class="section"><div class="section-heading"><div><span class="eyebrow">CONTINUE LEARNING</span><h2>Your active programs</h2></div><a routerLink="/learning">View all →</a></div><div class="learning-list"><article class="learning-row" *ngFor="let enrollment of activeEnrollments"><div class="learning-thumb">+</div><div class="learning-info"><span class="meta">{{enrollment.status}}</span><h3>{{courseTitle(enrollment.courseId)}}</h3><div class="progress-track"><i [style.width.%]="enrollment.progress"></i></div><small>{{enrollment.progress}}% complete</small></div><a class="button primary compact" [routerLink]="['/learn',enrollment.courseId]">Continue</a></article></div><div class="empty-state small" *ngIf="!activeEnrollments.length"><h3>No active course yet</h3><p>Explore the catalogue or check with your organization for assignments.</p><a routerLink="/catalogue">Browse available courses →</a></div></section>
+<div class="dashboard-grid"><section class="panel"><span class="eyebrow">QUICK LINKS</span><h2>Keep moving</h2><div class="quick-links"><a routerLink="/learning"><b>My Learning</b><span>Assignments and progress →</span></a><a routerLink="/certificates"><b>Certificates</b><span>Completed credentials →</span></a><a routerLink="/profile"><b>Account settings</b><span>Profile and organization →</span></a></div></section><section class="panel callout"><span class="eyebrow">CANONICAL TRAINING</span><h2>Exams and results</h2><p>Assessment attempts, grading and certificates remain protected inside Innovacare Training.</p><a class="button ghost" [href]="trainingDashboard" target="_blank" rel="noopener">Open Training dashboard ↗</a></section></div></div>` })
+export class DashboardComponent {
+  readonly user$ = this.auth.user$; readonly profile$ = this.auth.profile$; readonly enrollments$ = this.learning.enrollments$; readonly trainingDashboard = 'https://innovacare-training.web.app/learner';
+  constructor(private readonly auth: AcademyAuthService, private readonly learning: AcademyLearningService, private readonly catalog: AcademyCatalogService) {}
+  get activeEnrollments() { return this.learning.enrollments$.value.filter(item => item.status !== 'completed').slice(0, 4); }
+  get inProgress(): number { return this.learning.enrollments$.value.filter(item => ['in_progress','in-progress','started'].includes(item.status)).length; }
+  get completed(): number { return this.learning.enrollments$.value.filter(item => item.status === 'completed').length; }
+  get average(): number { const items=this.learning.enrollments$.value; return items.length ? Math.round(items.reduce((sum,item)=>sum+item.progress,0)/items.length) : 0; }
+  courseTitle(id: string): string { return this.catalog.getById(id)?.title || id; }
+}

@@ -1,29 +1,4 @@
-<div class="contain mt-5 pd-5">
-<form [formGroup]="searchForm" (ngSubmit)="submitForm()">
-    <div class="row">
-        <div class="mb-3 col-lg-10">
-            <input type="email" class="form-control" formControlName="movieName" placeholder="search Movie here...">
-        </div>
-
-        <div class="col-lg-2">
-            <button class="btn btn-md">Search</button>
-        </div>
-    </div>
-</form>
-
-
-<div class="row mt-5">
-    <div class="col-lg-4" *ngFor="let s of searchResult">
-        <div class="row">
-            <div class="col-lg-3 mt-3 mb-3" *ngIf="s.poster_path">
-                <img src="https://image.tmdb.org/t/p/original/{{ s.poster_path }}"  [routerLink]="['/movie', s.id]" >
-            </div>
-            <div class="col-lg-9 mt-4 mb-4">
-                <h5 class="text-white" [routerLink]="['/movie', s.id]">{{ s.original_title }}</h5>
-            </div>
-        </div>
-
-    </div>
-</div>
-
-</div>
+<div class="page"><section class="page-hero compact"><span class="eyebrow">COURSE CATALOGUE</span><h1>Explore every learning path</h1><p>Only courses authorized by the canonical Training rules and your account context are shown.</p></section>
+<section class="filter-bar" aria-label="Course filters"><label class="search-field"><span class="sr-only">Search courses</span><input type="search" [(ngModel)]="query" placeholder="Search topics, instructors or skills…"><b>⌕</b></label><label><span>Category</span><select [(ngModel)]="category"><option *ngFor="let value of categories">{{value}}</option></select></label><label><span>Level</span><select [(ngModel)]="level"><option *ngFor="let value of levels">{{value}}</option></select></label></section>
+<div class="skeleton-grid" *ngIf="loading$|async"><div class="skeleton" *ngFor="let item of [1,2,3,4,5,6]"></div></div><div class="alert error" *ngIf="error$|async as error" role="alert"><span>{{error}}</span><button (click)="catalog.retry()">Retry</button></div>
+<section class="section no-top" *ngIf="!(loading$|async)"><div class="section-heading"><h2>Available courses</h2><span class="muted">{{(courses$|async)?.length || 0}} authorized</span></div><div class="course-grid"><ng-container *ngFor="let course of courses$|async"><a class="course-card" *ngIf="matches(course)" [routerLink]="['/course',course.id]"><div class="course-art" [style.backgroundImage]="course.imageUrl ? 'linear-gradient(180deg,transparent,#07131e),url('+course.imageUrl+')' : ''"><span class="pill">{{course.category}}</span><strong>+</strong></div><div class="course-body"><div class="meta">{{course.language}} · {{course.level}} · {{course.durationMin}} min</div><h3>{{course.title}}</h3><p>{{course.description}}</p><span class="course-link">Course details →</span></div></a></ng-container></div><div class="empty-state" *ngIf="(courses$|async)?.length===0"><h3>No authorized courses found</h3><p>Try signing in, or ask your organization administrator to verify your assignments.</p></div></section></div>

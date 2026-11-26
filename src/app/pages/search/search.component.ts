@@ -1,34 +1,21 @@
-import { Component, OnInit } from '@angular/core';
-import { FormControl,FormGroup } from '@angular/forms';
-import { MovieApiServiceService } from 'src/app/service/movie-api-service.service';
+import { Component } from '@angular/core';
+import { AcademyCatalogService } from '../../service/academy-catalog.service';
+import { AcademyCourse } from '../../models/academy.models';
 
-
-
-@Component({
-  selector: 'app-search',
-  templateUrl: './search.component.html',
-  styleUrls: ['./search.component.css']
-})
-export class SearchComponent implements OnInit{
-
-  constructor(private service:MovieApiServiceService){}
-
-  ngOnInit(): void {
-      
+@Component({ standalone: false, selector: 'app-search', templateUrl: './search.component.html', styleUrls: ['./search.component.css'] })
+export class SearchComponent {
+  query = '';
+  category = 'All';
+  level = 'All';
+  readonly courses$ = this.catalog.courses$;
+  readonly loading$ = this.catalog.loading$;
+  readonly error$ = this.catalog.error$;
+  constructor(public readonly catalog: AcademyCatalogService) {}
+  get categories(): string[] { return ['All', ...new Set(this.catalog.courses$.value.map(course => course.category))]; }
+  get levels(): string[] { return ['All', ...new Set(this.catalog.courses$.value.map(course => course.level))]; }
+  matches(course: AcademyCourse): boolean {
+    const query = this.query.trim().toLowerCase();
+    const matchesText = !query || [course.title, course.description, course.category, course.lecturer, ...course.tags].some(value => value.toLowerCase().includes(query));
+    return matchesText && (this.category === 'All' || course.category === this.category) && (this.level === 'All' || course.level === this.level);
   }
-  searchResult:any;
-  searchForm = new FormGroup({
-    'movieName' :new FormControl(null)
-  });
-
-  submitForm()
-  {
-       console.log(this.searchForm.value,'searchform#');
-    this.service.searchMovie(this.searchForm.value).subscribe((result)=>{
-      console.log(result, 'searchmovie##');
-      this.searchResult = result.results;
-    });  
-    
-  }
-
 }
